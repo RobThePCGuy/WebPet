@@ -1,0 +1,265 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;500&display=swap");
+::selection {
+  background-color: transparent;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #fafafa;
+  transition: background-color 0.3s;
+}
+
+h1,
+h2 {
+  font-family: "DM Mono", monospace;
+  font-weight: 500;
+}
+
+h3 {
+  margin-top: 20px;
+  font-family: "DM Mono", monospace;
+  font-weight: 300;
+}
+
+.hide {
+  display: none;
+}
+
+/*MENU SCREEN*/
+.menu {
+  position: absolute;
+  top: 50vh;
+  transform: translateY(-50%);
+  width: 100%;
+  text-align: center;
+}
+
+/*SETTINGS SCREEN*/
+.settings {
+  position: absolute;
+  top: 50vh;
+  transform: translateY(-50%);
+  width: 100%;
+  text-align: center;
+}
+
+.settings-buttons a {
+  display: inline-block;
+  font-size: 30px;
+  background-color: transparent;
+  border: 2px solid #131313;
+  padding: 5px 10px;
+  margin: 20px 20px 0px 20px;
+  transition: background-color 0.1s, color 0.1s;
+  text-decoration: none;
+  color: #131313;
+  font-weight: 300;
+  font-family: "DM Mono", monospace;
+}
+
+.settings-buttons a:hover {
+  background-color: #131313;
+  color: #fafafa;
+}
+
+.settings-buttons {
+  width: 100%;
+  text-align: center;
+}
+
+/*GAME SCREEN*/
+.webpet {
+  position: absolute;
+  display: block;
+  width: 100%;
+  top: 50vh;
+  transform: translateY(-50%);
+  font-size: 80px;
+  text-align: center;
+}
+
+#t-body {
+  font-family: "Arial", sans-serif;
+  font-size: 70px;
+}
+
+#name {
+  display: inline-block;
+  margin-bottom: 50px;
+  color: #fff;
+  padding: 5px 10px;
+  font-size: 30px;
+  background-color: #131313;
+  font-family: "DM Mono", monospace;
+  font-weight: 500;
+}
+
+.buttons a,
+.menu-buttons a {
+  display: inline-block;
+  font-size: 40px;
+  background-color: transparent;
+  border: 2px solid #131313;
+  padding: 10px 20px;
+  margin: 100px 20px 0px 20px;
+  transition: background-color 0.1s;
+  text-decoration: none;
+  color: #131313;
+  font-weight: 300;
+  font-family: "DM Mono", monospace;
+}
+
+.buttons a:hover,
+.menu-buttons a:hover {
+  background-color: #131313;
+  color: #fafafa;
+}
+
+.buttons,
+.menu-buttons {
+  width: 100%;
+  text-align: center;
+}
+
+.hp {
+  font-family: "DM Mono", monospace;
+  font-weight: 300;
+  font-size: 30px;
+  width: 100%;
+  text-align: center;
+}
+
+.hp span {
+  font-weight: 500;
+}
+
+.hp p {
+  display: inline;
+}
+
+@media (max-width: 860px) {
+  .hp {
+    font-size: 20px;
+  }
+
+  .buttons a,
+  .menu-buttons a,
+  .settings-buttons a {
+    font-size: 30px;
+  }
+
+  #name {
+    font-size: 20px;
+  }
+
+  #t-body {
+    font-size: 50px;
+  }
+}
+
+@media (max-width: 540px) {
+  .hp p {
+    font-size: 20px;
+    display: block;
+  }
+
+  .buttons a,
+  .menu-buttons a,
+  .settings-buttons a {
+    font-size: 20px;
+    margin: 20px 5px 0px 5px;
+  }
+
+  #name {
+    font-size: 20px;
+  }
+
+  #t-body {
+    font-size: 40px;
+  }
+}
+
+@media (max-width: 540px) {
+  .hp p {
+    font-size: 20px;
+    display: block;
+  }
+
+  .buttons a,
+  .menu-buttons a,
+  .settings-buttons a {
+    font-size: 20px;
+    margin: 20px 2px 0px 2px;
+  }
+
+  #name {
+    font-size: 20px;
+  }
+
+  #t-body {
+    font-size: 30px;
+  }
+
+  .webpet {
+    top: 120px;
+    transform: translateY(0);
+  }
+}
+
+/*Night mode*/
+body.nightmode-on {
+  background-color: #111;
+  color: #fafafa;
+}
+
+body.nightmode-on .settings-buttons a {
+  color: #fafafa;
+  border: 2px solid #fafafa;
+}
+
+body.nightmode-on .settings-buttons a:hover {
+  background-color: #fafafa;
+  color: #111;
+}
+
+body.nightmode-on #name {
+  color: #111;
+  background-color: #fafafa;
+}
+
+body.nightmode-on .buttons a,
+body.nightmode-on .menu-buttons a {
+  color: #fafafa;
+  border: 2px solid #fafafa;
+}
+
+body.nightmode-on .buttons a:hover,
+body.nightmode-on .menu-buttons a:hover {
+  background-color: #fafafa;
+  color: #111;
+}
+
+.notification {
+  position: fixed;
+  bottom: -100px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #131313;
+  color: #fafafa;
+  padding: 15px 30px;
+  font-family: 'DM Mono', monospace;
+  font-size: 20px;
+  border-radius: 5px;
+  opacity: 0;
+  transition: all 0.5s ease;
+  z-index: 1000;
+}
+
+.notification.show {
+  bottom: 30px;
+  opacity: 1;
+}
