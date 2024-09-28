@@ -1,4 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;500&display=swap");
 ::selection {
   background-color: transparent;
 }
@@ -29,7 +28,7 @@ h3 {
   display: none;
 }
 
-/*MENU SCREEN*/
+/* MENU SCREEN */
 .menu {
   position: absolute;
   top: 50vh;
@@ -38,11 +37,16 @@ h3 {
   text-align: center;
 }
 
-/*SETTINGS SCREEN*/
+/* SETTINGS SCREEN */
 .settings {
   position: absolute;
   top: 50vh;
   transform: translateY(-50%);
+  width: 100%;
+  text-align: center;
+}
+
+.settings-buttons {
   width: 100%;
   text-align: center;
 }
@@ -53,7 +57,7 @@ h3 {
   background-color: transparent;
   border: 2px solid #131313;
   padding: 5px 10px;
-  margin: 20px 20px 0px 20px;
+  margin: 20px 20px 0 20px;
   transition: background-color 0.1s, color 0.1s;
   text-decoration: none;
   color: #131313;
@@ -66,12 +70,7 @@ h3 {
   color: #fafafa;
 }
 
-.settings-buttons {
-  width: 100%;
-  text-align: center;
-}
-
-/*GAME SCREEN*/
+/* GAME SCREEN */
 .webpet {
   position: absolute;
   display: block;
@@ -98,15 +97,23 @@ h3 {
   font-weight: 500;
 }
 
+.buttons,
+.menu-buttons {
+  width: 100%;
+  text-align: center;
+}
+
+/* BUTTON STYLES */
 .buttons a,
-.menu-buttons a {
+.menu-buttons a,
+.settings-buttons a {
   display: inline-block;
   font-size: 40px;
   background-color: transparent;
   border: 2px solid #131313;
   padding: 10px 20px;
-  margin: 100px 20px 0px 20px;
-  transition: background-color 0.1s;
+  margin: 100px 20px 0 20px;
+  transition: background-color 0.3s, color 0.3s, transform 0.3s, box-shadow 0.3s;
   text-decoration: none;
   color: #131313;
   font-weight: 300;
@@ -114,15 +121,19 @@ h3 {
 }
 
 .buttons a:hover,
-.menu-buttons a:hover {
+.menu-buttons a:hover,
+.settings-buttons a:hover {
   background-color: #131313;
   color: #fafafa;
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
-.buttons,
-.menu-buttons {
-  width: 100%;
-  text-align: center;
+/* Optional: Add active state */
+.buttons a:active,
+.menu-buttons a:active,
+.settings-buttons a:active {
+  transform: translateY(-2px);
 }
 
 .hp {
@@ -141,6 +152,7 @@ h3 {
   display: inline;
 }
 
+/* Responsive Styles */
 @media (max-width: 860px) {
   .hp {
     font-size: 20px;
@@ -150,6 +162,7 @@ h3 {
   .menu-buttons a,
   .settings-buttons a {
     font-size: 30px;
+    transition: background-color 0.1s, color 0.1s, transform 0.3s;
   }
 
   #name {
@@ -171,29 +184,8 @@ h3 {
   .menu-buttons a,
   .settings-buttons a {
     font-size: 20px;
-    margin: 20px 5px 0px 5px;
-  }
-
-  #name {
-    font-size: 20px;
-  }
-
-  #t-body {
-    font-size: 40px;
-  }
-}
-
-@media (max-width: 540px) {
-  .hp p {
-    font-size: 20px;
-    display: block;
-  }
-
-  .buttons a,
-  .menu-buttons a,
-  .settings-buttons a {
-    font-size: 20px;
-    margin: 20px 2px 0px 2px;
+    margin: 20px 5px 0 5px;
+    transition: background-color 0.1s, color 0.1s, transform 0.3s;
   }
 
   #name {
@@ -210,20 +202,25 @@ h3 {
   }
 }
 
-/*Night mode*/
+/* Night Mode */
 body.nightmode-on {
   background-color: #111;
   color: #fafafa;
 }
 
-body.nightmode-on .settings-buttons a {
+body.nightmode-on .settings-buttons a,
+body.nightmode-on .buttons a,
+body.nightmode-on .menu-buttons a {
   color: #fafafa;
   border: 2px solid #fafafa;
 }
 
-body.nightmode-on .settings-buttons a:hover {
+body.nightmode-on .settings-buttons a:hover,
+body.nightmode-on .buttons a:hover,
+body.nightmode-on .menu-buttons a:hover {
   background-color: #fafafa;
   color: #111;
+  transform: translateY(-5px);
 }
 
 body.nightmode-on #name {
@@ -231,18 +228,7 @@ body.nightmode-on #name {
   background-color: #fafafa;
 }
 
-body.nightmode-on .buttons a,
-body.nightmode-on .menu-buttons a {
-  color: #fafafa;
-  border: 2px solid #fafafa;
-}
-
-body.nightmode-on .buttons a:hover,
-body.nightmode-on .menu-buttons a:hover {
-  background-color: #fafafa;
-  color: #111;
-}
-
+/* Notification */
 .notification {
   position: fixed;
   bottom: -100px;
@@ -251,7 +237,7 @@ body.nightmode-on .menu-buttons a:hover {
   background-color: #131313;
   color: #fafafa;
   padding: 15px 30px;
-  font-family: 'DM Mono', monospace;
+  font-family: "DM Mono", monospace;
   font-size: 20px;
   border-radius: 5px;
   opacity: 0;
@@ -262,4 +248,35 @@ body.nightmode-on .menu-buttons a:hover {
 .notification.show {
   bottom: 30px;
   opacity: 1;
+}
+
+/* Pet Appearance Styles */
+#t-body span {
+  display: inline-block;
+  transition: all 0.5s ease;
+}
+
+@keyframes colorChange {
+  0% {
+    filter: hue-rotate(0deg);
+  }
+  100% {
+    filter: hue-rotate(360deg);
+  }
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+#t-body span.animate {
+  animation: colorChange 5s infinite linear, float 3s infinite ease-in-out;
 }
