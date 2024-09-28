@@ -1,3 +1,7 @@
+**Credit to my original inspiration: [Creasium](https://codepen.io/Creasium/pen/NWGOGrr)**
+
+---
+
 ## **Overview**
 
 **WebPet v1.2** is a virtual pet web application that allows users to adopt, care for, and interact with a virtual pet through a web interface. The app provides a nostalgic experience reminiscent of classic virtual pet games, with modern features and customization options.
