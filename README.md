@@ -4,7 +4,7 @@
 
 ## **Overview**
 
-**WebPet v1.2** is a virtual pet web application that allows users to adopt, care for, and interact with a virtual pet through a web interface. The app provides a nostalgic experience reminiscent of classic virtual pet games, with modern features and customization options.
+**WebPet v1.3** is a virtual pet web application that allows users to adopt, care for, and interact with a virtual pet through a web interface. The app provides a nostalgic experience reminiscent of classic virtual pet games, with modern features and customization options.
 
 ---
 
@@ -201,8 +201,8 @@
 
 ## **Conclusion**
 
-**WebPet v1.2** offers a charming and engaging virtual pet experience that combines care management with interactive gameplay. With its dynamic appearance system, customizable settings, and the thrill of discovering rare pets, it provides both casual enjoyment and challenges for players seeking to keep their pet alive and happy for as long as possible.
+**WebPet v1.3** offers a charming and engaging virtual pet experience that combines care management with interactive gameplay. With its dynamic appearance system, customizable settings, and the thrill of discovering rare pets, it provides both casual enjoyment and challenges for players seeking to keep their pet alive and happy for as long as possible.
 
-Whether you're looking to relive the nostalgia of virtual pet games or trying out a simple yet entertaining web app, **WebPet v1.2** delivers a delightful experience right in your browser.
+Whether you're looking to relive the nostalgia of virtual pet games or trying out a simple yet entertaining web app, **WebPet v1.3** delivers a delightful experience right in your browser.
 
 ---
