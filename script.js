@@ -16,6 +16,7 @@ const nightModeOnBtn = document.querySelector("#nightmode-on");
 // Constants for the new buttons
 const saveBtn = document.querySelector("#action-save");
 const loadBtn = document.querySelector("#action-load");
+const randomizeBtn = document.querySelector("#action-randomize");
 
 // Constants for main bar
 const sleepHp = document.querySelector("#sleep-hp");
@@ -43,7 +44,13 @@ let day = 20;
 var coreUpdate;
 var webpetName;
 
-// New object
+let wpet = new WebPet();
+let sleepHpCount;
+let hungerHpCount;
+let playHpCount;
+let score = 0;
+
+// WebPet constructor
 function WebPet() {
   this.sleep = maxSleep;
   this.hunger = maxHunger;
@@ -51,45 +58,65 @@ function WebPet() {
   this.sleepNotified = false;
   this.hungerNotified = false;
   this.playNotified = false;
-  this.originalAppearance = {}; // We'll set this later
+  this.originalAppearance = {};
 }
 
 // Abilities
 WebPet.prototype.actionSleep = function () {
-  this.sleep += 40 / (day * 2);
+  this.sleep += 50;
+  this.play -= 20;
+  this.hunger -= 30;
+  this.normalizeStats();
 };
 
 WebPet.prototype.actionEat = function () {
-  this.hunger += 120 / (day * 2);
+  this.hunger += 50;
+  this.sleep -= 20;
+  this.play -= 30;
+  this.normalizeStats();
 };
 
 WebPet.prototype.actionPlay = function () {
-  this.play += 80 / (day * 2);
+  this.play += 50;
+  this.sleep -= 20;
+  this.hunger -= 30;
+  this.normalizeStats();
+};
+
+WebPet.prototype.normalizeStats = function () {
+  // Ensure stats do not exceed maximum values
+  if (this.sleep > maxSleep) this.sleep = maxSleep;
+  if (this.hunger > maxHunger) this.hunger = maxHunger;
+  if (this.play > maxPlay) this.play = maxPlay;
+
+  // Ensure stats do not fall below zero
+  if (this.sleep < 0) this.sleep = 0;
+  if (this.hunger < 0) this.hunger = 0;
+  if (this.play < 0) this.play = 0;
 };
 
 WebPet.prototype.tick = function () {
-  this.sleep--;
-  this.hunger -= 3;
-  this.play -= 2;
+  this.sleep -= 1;
+  this.hunger -= 2;
+  this.play -= 1;
+
+  // Ensure stats do not fall below zero
+  if (this.sleep < 0) this.sleep = 0;
+  if (this.hunger < 0) this.hunger = 0;
+  if (this.play < 0) this.play = 0;
 };
 
-let tmgch = new WebPet();
-let sleepHpCount;
-let hungerHpCount;
-let playHpCount;
-let score = 0;
-
-// Controllers
+// Event listeners
 sleepBtn.addEventListener("click", function () {
-  tmgch.actionSleep();
+  wpet.actionSleep();
 });
 
 feedBtn.addEventListener("click", function () {
-  tmgch.actionEat();
+  wpet.actionEat();
 });
 
 playBtn.addEventListener("click", function () {
-  tmgch.actionPlay();
+  wpet.actionPlay();
 });
 
 startBtn.addEventListener("click", function () {
@@ -136,6 +163,11 @@ loadBtn.addEventListener("click", function () {
   loadGameNotification();
 });
 
+// Event listener for the Randomize button
+randomizeBtn.addEventListener("click", function () {
+  randomizeCreature();
+});
+
 // NightMode toggle
 function nightModeOn() {
   document.querySelector("body").classList.add("nightmode-on");
@@ -164,9 +196,9 @@ function settingsMenu() {
 // Save and Load functions
 function saveGame() {
   var gameState = {
-    sleep: tmgch.sleep,
-    hunger: tmgch.hunger,
-    play: tmgch.play,
+    sleep: wpet.sleep,
+    hunger: wpet.hunger,
+    play: wpet.play,
     score: score,
     day: day,
     name: webpetName,
@@ -177,10 +209,26 @@ function saveGame() {
     handRight: handRight.innerHTML,
     effectLeft: effectLeft.innerHTML,
     effectRight: effectRight.innerHTML,
-    originalAppearance: tmgch.originalAppearance,
-    sleepNotified: tmgch.sleepNotified,
-    hungerNotified: tmgch.hungerNotified,
-    playNotified: tmgch.playNotified
+    originalAppearance: wpet.originalAppearance,
+    sleepNotified: wpet.sleepNotified,
+    hungerNotified: wpet.hungerNotified,
+    playNotified: wpet.playNotified,
+    // Save styles
+    styles: {
+      handLeft: handLeft.style.cssText,
+      handRight: handRight.style.cssText,
+      eyeLeft: eyeLeft.style.cssText,
+      eyeRight: eyeRight.style.cssText,
+      mouth: mouth.style.cssText
+    },
+    // Save classes
+    classes: {
+      handLeft: handLeft.className,
+      handRight: handRight.className,
+      eyeLeft: eyeLeft.className,
+      eyeRight: eyeRight.className,
+      mouth: mouth.className
+    }
   };
   localStorage.setItem("webpetGameState", JSON.stringify(gameState));
 }
@@ -189,16 +237,16 @@ function loadSavedGame() {
   var gameState = JSON.parse(localStorage.getItem("webpetGameState"));
 
   // Reinitialize the WebPet object
-  tmgch = new WebPet();
+  wpet = new WebPet();
 
   // Restore WebPet stats
-  tmgch.sleep = gameState.sleep;
-  tmgch.hunger = gameState.hunger;
-  tmgch.play = gameState.play;
-  tmgch.sleepNotified = gameState.sleepNotified;
-  tmgch.hungerNotified = gameState.hungerNotified;
-  tmgch.playNotified = gameState.playNotified;
-  tmgch.originalAppearance = gameState.originalAppearance;
+  wpet.sleep = gameState.sleep;
+  wpet.hunger = gameState.hunger;
+  wpet.play = gameState.play;
+  wpet.sleepNotified = gameState.sleepNotified;
+  wpet.hungerNotified = gameState.hungerNotified;
+  wpet.playNotified = gameState.playNotified;
+  wpet.originalAppearance = gameState.originalAppearance;
 
   score = gameState.score;
   day = gameState.day;
@@ -213,6 +261,20 @@ function loadSavedGame() {
   handRight.innerHTML = gameState.handRight;
   effectLeft.innerHTML = gameState.effectLeft;
   effectRight.innerHTML = gameState.effectRight;
+
+  // Restore styles
+  handLeft.style.cssText = gameState.styles.handLeft;
+  handRight.style.cssText = gameState.styles.handRight;
+  eyeLeft.style.cssText = gameState.styles.eyeLeft;
+  eyeRight.style.cssText = gameState.styles.eyeRight;
+  mouth.style.cssText = gameState.styles.mouth;
+
+  // Restore classes
+  handLeft.className = gameState.classes.handLeft;
+  handRight.className = gameState.classes.handRight;
+  eyeLeft.className = gameState.classes.eyeLeft;
+  eyeRight.className = gameState.classes.eyeRight;
+  mouth.className = gameState.classes.mouth;
 
   // Clear any existing intervals
   clearInterval(coreUpdate);
@@ -270,7 +332,7 @@ function adjustAppearance() {
     mouth.innerHTML = "-";
   } else {
     // Revert to original mouth
-    mouth.innerHTML = tmgch.originalAppearance.mouth;
+    mouth.innerHTML = wpet.originalAppearance.mouth;
   }
 
   // Sleep affects the eyes
@@ -288,8 +350,8 @@ function adjustAppearance() {
     eyeRight.innerHTML = "・";
   } else {
     // Revert to original eyes
-    eyeLeft.innerHTML = tmgch.originalAppearance.eyeLeft;
-    eyeRight.innerHTML = tmgch.originalAppearance.eyeRight;
+    eyeLeft.innerHTML = wpet.originalAppearance.eyeLeft;
+    eyeRight.innerHTML = wpet.originalAppearance.eyeRight;
   }
 
   // Play affects the hands and effects
@@ -315,10 +377,10 @@ function adjustAppearance() {
     effectRight.innerHTML = "✧";
   } else {
     // Revert to original hands and effects
-    handLeft.innerHTML = tmgch.originalAppearance.handLeft;
-    handRight.innerHTML = tmgch.originalAppearance.handRight;
-    effectLeft.innerHTML = tmgch.originalAppearance.effectLeft;
-    effectRight.innerHTML = tmgch.originalAppearance.effectRight;
+    handLeft.innerHTML = wpet.originalAppearance.handLeft;
+    handRight.innerHTML = wpet.originalAppearance.handRight;
+    effectLeft.innerHTML = wpet.originalAppearance.effectLeft;
+    effectRight.innerHTML = wpet.originalAppearance.effectRight;
   }
 }
 
@@ -347,41 +409,51 @@ function startGame() {
   document.querySelector("#name").innerHTML = webpetName;
 
   // Reset WebPet stats
-  tmgch = new WebPet();
+  wpet = new WebPet();
   score = 0;
 
-  // Arrays of possible appearance values
-  var possibleEyes = ["＾", "・", "●", "◡", "×", "T_T", "´", "`"];
-  var possibleMouths = ["▿", "_", "O", "o", "-", "0", ".", "v", "w"];
-  var possibleHands = ["◝", "◜", "╭", "╮", "/", "\\", " "];
-  var possibleEffects = ["°˖✧", "˖✧", "✧˖", "✧", "*", "", " "];
+  // Check if the name is a rare pet key
+  if (rarePets[webpetName]) {
+    // Load the rare pet appearance
+    const appearanceData = rarePets[webpetName];
+    applyAppearanceData(appearanceData);
+    showNotification("You've unlocked a rare pet!");
+  } else {
+    // Randomly assign appearance values
+    var possibleEyes = ["＾", "・", "●", "◡", "×", "T_T", "´", "`"];
+    var possibleMouths = ["▿", "_", "O", "o", "-", "0", ".", "v", "w"];
+    var possibleHands = ["◝", "◜", "╭", "╮", "/", "\\", " "];
+    var possibleEffects = ["°˖✧", "˖✧", "✧˖", "✧", "*", "", " "];
 
-  // Randomly assign appearance values
-  eyeLeft.innerHTML =
-    possibleEyes[Math.floor(Math.random() * possibleEyes.length)];
-  eyeRight.innerHTML =
-    possibleEyes[Math.floor(Math.random() * possibleEyes.length)];
-  mouth.innerHTML =
-    possibleMouths[Math.floor(Math.random() * possibleMouths.length)];
-  handLeft.innerHTML =
-    possibleHands[Math.floor(Math.random() * possibleHands.length)];
-  handRight.innerHTML =
-    possibleHands[Math.floor(Math.random() * possibleHands.length)];
-  effectLeft.innerHTML =
-    possibleEffects[Math.floor(Math.random() * possibleEffects.length)];
-  effectRight.innerHTML =
-    possibleEffects[Math.floor(Math.random() * possibleEffects.length)];
+    eyeLeft.innerHTML =
+      possibleEyes[Math.floor(Math.random() * possibleEyes.length)];
+    eyeRight.innerHTML =
+      possibleEyes[Math.floor(Math.random() * possibleEyes.length)];
+    mouth.innerHTML =
+      possibleMouths[Math.floor(Math.random() * possibleMouths.length)];
+    handLeft.innerHTML =
+      possibleHands[Math.floor(Math.random() * possibleHands.length)];
+    handRight.innerHTML =
+      possibleHands[Math.floor(Math.random() * possibleHands.length)];
+    effectLeft.innerHTML =
+      possibleEffects[Math.floor(Math.random() * possibleEffects.length)];
+    effectRight.innerHTML =
+      possibleEffects[Math.floor(Math.random() * possibleEffects.length)];
 
-  // Store original appearance
-  tmgch.originalAppearance = {
-    eyeLeft: eyeLeft.innerHTML,
-    eyeRight: eyeRight.innerHTML,
-    mouth: mouth.innerHTML,
-    handLeft: handLeft.innerHTML,
-    handRight: handRight.innerHTML,
-    effectLeft: effectLeft.innerHTML,
-    effectRight: effectRight.innerHTML
-  };
+    // Store original appearance
+    wpet.originalAppearance = {
+      eyeLeft: eyeLeft.innerHTML,
+      eyeRight: eyeRight.innerHTML,
+      mouth: mouth.innerHTML,
+      handLeft: handLeft.innerHTML,
+      handRight: handRight.innerHTML,
+      effectLeft: effectLeft.innerHTML,
+      effectRight: effectRight.innerHTML
+    };
+
+    // Randomize creature's styles
+    randomizeCreature();
+  }
 
   // Clear any existing intervals
   clearInterval(coreUpdate);
@@ -393,9 +465,9 @@ function startGame() {
 
 // Main game loop
 function core() {
-  sleepHpCount = ((tmgch.sleep / maxSleep) * 100).toFixed(2);
-  hungerHpCount = ((tmgch.hunger / maxHunger) * 100).toFixed(2);
-  playHpCount = ((tmgch.play / maxPlay) * 100).toFixed(2);
+  sleepHpCount = ((wpet.sleep / maxSleep) * 100).toFixed(2);
+  hungerHpCount = ((wpet.hunger / maxHunger) * 100).toFixed(2);
+  playHpCount = ((wpet.play / maxPlay) * 100).toFixed(2);
 
   // Update scores
   score++;
@@ -417,21 +489,21 @@ function core() {
     document.querySelector(".main-menu-screen").classList.remove("hide");
 
     // Reset WebPet object
-    tmgch = new WebPet();
+    wpet = new WebPet();
     return;
   }
 
   // Limit max stats
-  if (tmgch.sleep > maxSleep * 1.2) {
-    tmgch.sleep = maxSleep * 1.2;
+  if (wpet.sleep > maxSleep * 1.2) {
+    wpet.sleep = maxSleep * 1.2;
   }
 
-  if (tmgch.hunger > maxHunger * 1.2) {
-    tmgch.hunger = maxHunger * 1.2;
+  if (wpet.hunger > maxHunger * 1.2) {
+    wpet.hunger = maxHunger * 1.2;
   }
 
-  if (tmgch.play > maxPlay * 1.2) {
-    tmgch.play = maxPlay * 1.2;
+  if (wpet.play > maxPlay * 1.2) {
+    wpet.play = maxPlay * 1.2;
   }
 
   // Limit display stats to 100%
@@ -451,36 +523,182 @@ function core() {
   playHp.innerHTML = playHpCount;
 
   // Remove HP every tick
-  tmgch.tick();
+  wpet.tick();
 
   // Adjust appearance based on stats
   adjustAppearance();
 
   // Check for low stats and notify
-  if (sleepHpCount < 20 && !tmgch.sleepNotified) {
+  if (sleepHpCount < 20 && !wpet.sleepNotified) {
     showNotification("Your WebPet is very sleepy!");
-    tmgch.sleepNotified = true; // Prevent repeated notifications
+    wpet.sleepNotified = true;
   }
-  if (hungerHpCount < 20 && !tmgch.hungerNotified) {
+  if (hungerHpCount < 20 && !wpet.hungerNotified) {
     showNotification("Your WebPet is very hungry!");
-    tmgch.hungerNotified = true;
+    wpet.hungerNotified = true;
   }
-  if (playHpCount < 20 && !tmgch.playNotified) {
+  if (playHpCount < 20 && !wpet.playNotified) {
     showNotification("Your WebPet needs to play!");
-    tmgch.playNotified = true;
+    wpet.playNotified = true;
   }
 
   // Reset notifications when stats are improved
   if (sleepHpCount >= 20) {
-    tmgch.sleepNotified = false;
+    wpet.sleepNotified = false;
   }
   if (hungerHpCount >= 20) {
-    tmgch.hungerNotified = false;
+    wpet.hungerNotified = false;
   }
   if (playHpCount >= 20) {
-    tmgch.playNotified = false;
+    wpet.playNotified = false;
   }
 
   // Save the game state
   saveGame();
+}
+
+// Randomize creature's styles
+function randomizeCreature() {
+  // Get all body parts
+  const bodyParts = {
+    handLeft: handLeft,
+    handRight: handRight,
+    eyeLeft: eyeLeft,
+    eyeRight: eyeRight,
+    mouth: mouth
+  };
+
+  // Function to get random size within limits
+  function getRandomSize(min, max) {
+    return (Math.random() * (max - min) + min).toFixed(2) + "em";
+  }
+
+  // Function to get random color within limits
+  function getRandomColor() {
+    const letters = "3456789ABCDEF"; // Avoid very light colors
+    let color = "#";
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * letters.length)];
+    }
+    return color;
+  }
+
+  // Function to get random position (offset) within limits
+  function getRandomPosition(maxOffset) {
+    return (Math.random() * maxOffset - maxOffset / 2).toFixed(2) + "px";
+  }
+
+  // Apply random styles to each body part
+  for (const part in bodyParts) {
+    const bodyPart = bodyParts[part];
+
+    if (bodyPart) {
+      // Randomize size (between 0.8em and 1.5em)
+      const randomSize = getRandomSize(0.8, 1.5);
+      bodyPart.style.fontSize = randomSize;
+
+      // Randomize color
+      bodyPart.style.color = getRandomColor();
+
+      // Randomize position (shift by up to 10px in any direction)
+      bodyPart.style.position = "relative";
+      bodyPart.style.top = getRandomPosition(10);
+      bodyPart.style.left = getRandomPosition(10);
+
+      // Randomly decide to add animation
+      if (Math.random() > 0.5) {
+        bodyPart.classList.add("animate");
+      } else {
+        bodyPart.classList.remove("animate");
+      }
+    }
+  }
+}
+
+// Define rare keys and their corresponding appearances
+const rarePets = {
+  "LABRACHU_KEY": {
+    eyeLeft: "⚡",
+    eyeRight: "⚡",
+    mouth: "ω",
+    handLeft: "ʕ",
+    handRight: "ʔ",
+    effectLeft: "🔬",
+    effectRight: "⚗️",
+    styles: {
+      handLeft: "font-size: 1.2em; color: #6A0DAD;",
+      handRight: "font-size: 1.2em; color: #6A0DAD;",
+      eyeLeft: "font-size: 1.0em; color: #FFD700;",
+      eyeRight: "font-size: 1.0em; color: #FFD700;",
+      mouth: "font-size: 1.0em; color: #FF4500;"
+    },
+    classes: {
+      handLeft: "animate",
+      handRight: "animate",
+      eyeLeft: "animate",
+      eyeRight: "animate",
+      mouth: "animate"
+    }
+  },
+  "PHOENIX_KEY": {
+    eyeLeft: "🔥",
+    eyeRight: "🔥",
+    mouth: "Δ",
+    handLeft: "λ",
+    handRight: "λ",
+    effectLeft: "✨",
+    effectRight: "✨",
+    styles: {
+      handLeft: "font-size: 1.1em; color: #FF4500;",
+      handRight: "font-size: 1.1em; color: #FF4500;",
+      eyeLeft: "font-size: 1.0em; color: #FF8C00;",
+      eyeRight: "font-size: 1.0em; color: #FF8C00;",
+      mouth: "font-size: 1.0em; color: #FFD700;"
+    },
+    classes: {
+      handLeft: "",
+      handRight: "",
+      eyeLeft: "animate",
+      eyeRight: "animate",
+      mouth: ""
+    }
+  }
+  // Add more rare pets as needed
+};
+
+// Helper function to apply appearance data
+function applyAppearanceData(appearanceData) {
+  // Restore appearance
+  eyeLeft.innerHTML = appearanceData.eyeLeft;
+  eyeRight.innerHTML = appearanceData.eyeRight;
+  mouth.innerHTML = appearanceData.mouth;
+  handLeft.innerHTML = appearanceData.handLeft;
+  handRight.innerHTML = appearanceData.handRight;
+  effectLeft.innerHTML = appearanceData.effectLeft;
+  effectRight.innerHTML = appearanceData.effectRight;
+
+  // Restore styles
+  handLeft.style.cssText = appearanceData.styles.handLeft;
+  handRight.style.cssText = appearanceData.styles.handRight;
+  eyeLeft.style.cssText = appearanceData.styles.eyeLeft;
+  eyeRight.style.cssText = appearanceData.styles.eyeRight;
+  mouth.style.cssText = appearanceData.styles.mouth;
+
+  // Restore classes
+  handLeft.className = appearanceData.classes.handLeft;
+  handRight.className = appearanceData.classes.handRight;
+  eyeLeft.className = appearanceData.classes.eyeLeft;
+  eyeRight.className = appearanceData.classes.eyeRight;
+  mouth.className = appearanceData.classes.mouth;
+
+  // Update the original appearance
+  wpet.originalAppearance = {
+    eyeLeft: appearanceData.eyeLeft,
+    eyeRight: appearanceData.eyeRight,
+    mouth: appearanceData.mouth,
+    handLeft: appearanceData.handLeft,
+    handRight: appearanceData.handRight,
+    effectLeft: appearanceData.effectLeft,
+    effectRight: appearanceData.effectRight
+  };
 }
